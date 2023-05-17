@@ -5,6 +5,7 @@ import { User } from 'src/users/entities/users.entity';
 import { UsersService } from 'src/users/users.service';
 import { Payload } from './security/payload.interface';
 import { JwtService } from '@nestjs/jwt';
+// import { UserDTO } from './dto/user.dto';
 
 @Injectable()
 export class AuthService {
@@ -30,5 +31,11 @@ export class AuthService {
     return {
       accessToken: this.jwtService.sign(payload),
     };
+  }
+
+  async tokenValidateUser(payload: Payload): Promise<User | undefined> {
+    return await this.usersService.findByFields({
+      where: { id: payload.id },
+    });
   }
 }
