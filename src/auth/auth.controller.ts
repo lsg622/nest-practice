@@ -11,6 +11,9 @@ import { SignInDto } from 'src/users/dtos/create.user.dto';
 import { AuthService } from './auth.service';
 import { Request, Response } from 'express';
 import { AuthGuard } from './security/auth.guard';
+import { RolesGuard } from './security/roles.guard';
+import { Roles } from './decorator/roll.decorator';
+import { RoleType } from './role-type';
 
 @Controller('auth')
 export class AuthController {
@@ -29,6 +32,14 @@ export class AuthController {
   @Get('/authenticate')
   @UseGuards(AuthGuard)
   isAuthenticated(@Req() req: Request): any {
+    const user: any = req.user;
+    return user;
+  }
+
+  @Get('/admin-role')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(RoleType.ADMIN)
+  adminRoleCheck(@Req() req: Request): any {
     const user: any = req.user;
     return user;
   }
