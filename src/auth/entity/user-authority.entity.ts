@@ -1,0 +1,24 @@
+import { User } from 'src/users/entities/users.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+
+@Entity('user_authority')
+export class UserAuthority {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column('int', { name: 'user_id' })
+  userId: number;
+
+  @Column('varchar', { name: 'user_authority' })
+  authorityName: string;
+
+  @ManyToOne((type) => User, (user) => user.authorities)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+}

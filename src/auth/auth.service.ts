@@ -27,15 +27,44 @@ export class AuthService {
       throw new HttpException('UNAVAILABLE_USER', HttpStatus.BAD_REQUEST);
     }
 
-    const payload: Payload = { id: userInfo.id, username: userInfo.username };
+    this.convertInAuthorities(userInfo);
+    const payload: Payload = {
+      id: userInfo.id,
+      username: userInfo.username,
+      authorities: userInfo.authorities,
+    };
     return {
       accessToken: this.jwtService.sign(payload),
     };
   }
 
   async tokenValidateUser(payload: Payload): Promise<User | undefined> {
-    return await this.usersService.findByFields({
+    const userInfo = await this.usersService.findByFields({
       where: { id: payload.id },
     });
+    this.flatAuthorities(userInfo);
+    return userInfo;
+  }
+
+  private flatAuthorities(user: any): User {
+    if (user && user.authorities) {
+      const authorities: string[] = [];
+      user.authorities.forEach((authority) => {
+        authorities.push(authority.authorityName);
+      });
+      user.authorities = authorities;
+    }
+    return user;
+  }
+
+  private convertInAuthorities(user: any): User {
+    if (user && user.authorities) {
+      const authorities: any[] = [];
+      user.authorities.forEach((authority) => {
+        authorities.push({ name: authority.authorityName });
+      });
+      user.authorities = authorities;
+    }
+    return user;
   }
 }
